@@ -1,5 +1,10 @@
-#include "all.h"
-
+// #include "all.h"
+#include <iostream>
+using namespace std;
+#include "error.h"
+#include "Inst.h"
+#include "tokens.h"
+#include "registers.h"
 
 static Oper regOpers[] = {
     new RegisterOper(0),
@@ -152,6 +157,37 @@ void CompareAndJumpInst :: gen()
     cout << " " << right << " ) goto " << label <<";\n";
 }
 
+void CompareAndSetInst :: gen()
+{
+    int op = cond;
+    cout << "\t";
+    cout << "(" << dest << ") = " << "( " << left << " ";
+    switch (op) {
+            case '<':
+                    cout << "<";
+                    break;
+            case LE:
+                    cout << "<=";
+                    break;
+            case '>':
+                    cout << ">";
+                    break;
+            case GE:
+                    cout << ">=";
+                    break;
+            case EQ:
+                    cout << "==";
+                    break;
+            case NE:
+                    cout << "!=";
+                    break;
+            default:
+                    compiler_error("CompareAndSetInst.default");
+                    break;
+    }
+    cout << " " << right << " ) ? true : false;\n";
+}
+
 void CallInst :: gen() 
 {
    cout << "\t" << subprogramName << "();\n";
@@ -261,14 +297,14 @@ void ImmediateOper :: gen()
 
 void ConstantOper :: gen()
 {
-    cout << constantValue;
+    cout << constValue;
 }
 
 // Output a reference to a hardware register
 
 void RegisterOper :: gen()
 {
-    switch( registerNumber ) {
+    switch( regNum ) {
             case RETURN_REG:
                     cout << "R0";
                     return;

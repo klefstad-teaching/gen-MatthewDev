@@ -1,4 +1,9 @@
-#include "all.h"
+#include <iostream>
+using namespace std;
+#include "error.h"
+#include "Inst.h"
+#include "tokens.h"
+#include "registers.h"
 
 int lineNumber = 1;
 

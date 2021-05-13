@@ -45,14 +45,21 @@ inline ostream & operator << (ostream & out, Oper o)
 struct ConstantOper 
     : OperBlock 
 {
-    int constantValue;
+    int constValue;
 
     ConstantOper(int val) 
-        : OperBlock(), constantValue(val)
+        : OperBlock(), constValue(val)
     {
     }
 
+    static Oper make(int val)
+    {
+        return new ConstantOper(val);
+    }
+
+
     virtual void gen();
+
 
 };
 
@@ -61,12 +68,18 @@ struct ConstantOper
 struct RegisterOper 
     : OperBlock 
 {
-    int registerNumber;
+    int regNum;
 
     RegisterOper(int r)
-        : OperBlock(), registerNumber(r)
+        : OperBlock(), regNum(r)
     {
     }
+
+    static Oper make(int r)
+    {
+        return new RegisterOper(r);
+    }
+
 
 	virtual int isRegister()
 	{
@@ -86,6 +99,12 @@ struct IndirectedOper
     {
     }
 
+    static Oper make(Oper o)
+    {
+        return new IndirectedOper(o);
+    }
+
+
     virtual void gen();
 
 };
@@ -100,6 +119,12 @@ struct SelectedOper
         : OperBlock(), selected(o), selectedOffset(offset)
     {
     }
+
+    static Oper make(Oper o, int offset)
+    {
+        return new SelectedOper(o, offset);
+    }
+
 
     virtual void gen();
 
@@ -117,6 +142,12 @@ struct IndexedOper
         : OperBlock(), array(o), index(ind)
     {
     }
+
+    static Oper make(Oper o, Oper ind)
+    {
+        return new IndexedOper(o, ind);
+    }
+
 
     virtual void gen();
 
@@ -136,6 +167,12 @@ struct NamedLabelOper
     {
     }
 
+    static Oper make(string name)
+    {
+        return new NamedLabelOper(name);
+    }
+
+
     virtual void gen();
 
 };
@@ -152,6 +189,12 @@ struct TempLabelOper
         : OperBlock(), labelNumber(TEMP_NUMBER++)
     {
     }
+
+    static Oper make()
+    {
+        return new TempLabelOper();
+    }
+
 
     virtual void gen();
 
@@ -170,6 +213,12 @@ struct ImmediateOper
         : OperBlock(), immediate(o)
     {
     }
+
+    static Oper make(Oper o)
+    {
+        return new ImmediateOper(o);
+    }
+
 
     virtual void gen();
 
@@ -523,6 +572,26 @@ struct CompareAndJumpInst
     virtual void gen();
 };
 
+struct CompareAndSetInst
+    : InstBlock 
+{
+    int cond;
+    Oper left, right, dest;
+
+    CompareAndSetInst(int t, Oper l, Oper r, Oper d) 
+        : cond(t), left(l), right(r), dest(d)
+    {
+    }
+
+    static void make( int t, Oper l, Oper r, Oper dest )
+    {
+        CompareAndSetInst local( t, l, r, dest );
+        local.gen();
+    }    
+        
+    virtual void gen();
+};
+
 struct CallInst
     : InstBlock
 {
@@ -781,3 +850,20 @@ struct EndVTableInst
 extern Oper TOS; // The top of stack (treated as a register)
 
 Oper regOper(int i); // register oper for reg number i
+
+inline void gen_move_immediate(Oper dest, int value)
+{
+    MoveInst :: make(dest, ImmediateOper :: make(ConstantOper :: make(value)));
+}
+inline void gen_jump(Oper label)
+{
+    LabelInst :: make(label);
+}
+inline void gen_compare(Oper label)
+{
+    LabelInst :: make(label);
+}
+inline void gen_set_cc(int t, Oper l, Oper r, Oper d)
+{
+    CompareAndSetInst :: make(t, l, r, d);
+}
