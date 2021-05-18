@@ -1,6 +1,5 @@
-#include <iostream>
-#include <stdio>
-#include <stdlib>
+#include <stdio.h>
+#include <stdlib.h>
 
 // This describes an abstract machine similar to the x86 two-address machine.
 // the SP points at the value on top of the stack
@@ -9,10 +8,11 @@
 // the FP and the first local variable of size s words will be -s words
 // before it. So initial parameter offset is 1 and initial local offset
 // is 0.  Remember all sizes must now be in words not bytes.
+// should compile with g++
 
-typedef int  Word; // most instructions deal with words
+typedef long long int Word; // most instructions deal with words
 
-typedef Word * WPointer;
+typedef Word * WPtr;
 typedef Word Register; 
 
 // The registers
@@ -26,12 +26,13 @@ typedef Word     ControlStack[STK_SIZE];
 ControlStack STK;
 
 // stack pointer and frame pointer
-WPointer STKEnd = STK+STK_SIZE-1;
-WPointer SP = STKEnd;
+WPtr STKEnd = STK+STK_SIZE-1;
+WPtr SP = STKEnd;
 Word FP = (Word)STKEnd;
 
-#define push(W) *--SP = (Word)(W) 
+#define push(W) *--SP = (W)
 #define pop(W) (W) = *SP++
+/*
 
 typedef int (*Vfn)();      // A virtual function pointer.
 
@@ -53,10 +54,10 @@ void new_line()
 
 void put_str()
 {
-    WPointer p;
+    WPtr p;
     push(FP);
     FP = (Word)SP; 
-    for(p = (WPointer)(SP[1]); *p != 0; p++)
+    for(p = (WPtr)(SP[1]); *p != 0; p++)
     {
         printf("%c", *p);
         fflush(stdout); 
@@ -95,13 +96,13 @@ void get_char()
 
 void get_str()
 {
-    WPointer p, q;
+    WPtr p, q;
     push(FP);
     FP = (Word)SP; 
     char s[512]; 
     char* ps = s;
     gets(s);
-    p = q = (WPointer)malloc(sizeof(Word)*(strlen(s)+1));
+    p = q = (WPtr)malloc(sizeof(Word)*(strlen(s)+1));
     for(; *s != '\0'; ps++, p++)
         *p = (Word)*ps; 
     R0 = (Word)q; 
@@ -130,7 +131,7 @@ void mfree()
 
 void dumpStack()
 {
-    for (Word* p = SP; p < STK+STK_SIZE; p++)
+    for (WPtr p = SP; p < STK+STK_SIZE; p++)
         cout << "value at " << (Word)p << " : " << *p << endl;
 }
 
@@ -141,6 +142,7 @@ void dumpRegs()
     cout << "R2 = " << R2 << endl;
     cout << "R3 = " << R3 << endl;
     cout << "SP = " << (Word)SP << endl;
-    cout << "FP = " << FP << endl;
+    cout << "FP = " << (Word)FP << endl;
 }
+*/
 

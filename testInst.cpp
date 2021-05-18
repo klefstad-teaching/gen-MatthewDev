@@ -18,7 +18,7 @@ int main()
 	Oper l = new TempLabelOper();
 	Oper nl = new NamedLabelOper("foo");
 	Oper i = new IndexedOper(l,r);
-	Oper c = new ConstantOper(50);
+	Oper c = new ConstOper(50);
 	Oper v = new ImmediateOper(c);
 
 	BeginFileInst :: make();
@@ -38,10 +38,10 @@ int main()
 	CompareAndJumpInst :: make( LE, s, d, l ); // if s <= d goto l
 	CallInst:: make( nl );
 	BeginDataInst :: make(l);
-	ConstantWordInst :: make( c );
+	ConstWordInst :: make( c );
 	EndDataInst :: make();
 	LeaveInst :: make( 20, 2, 4);
-	ReturnInst :: make(o);
+	ReturnInst :: make();
 	EndSubpInst :: make();
 	BeginVTableInst :: make( l );
 	VTableEntryInst :: make(nl);

@@ -32,6 +32,7 @@ public:
 
     void freeRegister(Oper reg)
     {
+        if (!reg) return;
         int i = reg->findGPRegister();
         if (i>0)
             isFree[i - MIN_GP_REG] = 1;
@@ -42,3 +43,4 @@ public:
 extern RegisterManager RM;
 
 #define FR(e) RM.freeRegister(e)
+

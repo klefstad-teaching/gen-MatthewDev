@@ -14,7 +14,7 @@ struct OperBlock
 
 	virtual int findGPRegister()
     {
-        compiler_error("undefined method findGPRegister in OperBlock");
+        // compiler_error("undefined method findGPRegister in OperBlock");
         return 0;
     }
 
@@ -42,19 +42,19 @@ inline ostream & operator << (ostream & out, Oper o)
 // A simple constant, e.g., 10
 
 
-struct ConstantOper 
+struct ConstOper 
     : OperBlock 
 {
     int constValue;
 
-    ConstantOper(int val) 
+    ConstOper(int val) 
         : OperBlock(), constValue(val)
     {
     }
 
     static Oper make(int val)
     {
-        return new ConstantOper(val);
+        return new ConstOper(val);
     }
 
 
@@ -335,18 +335,18 @@ struct IncrInst
 // The return unary operator returns its operand
 
 struct ReturnInst
-    : UnaryInst
+    : InstBlock
 {
-    ReturnInst(Oper o)
-        : UnaryInst(o)
+    ReturnInst()
+        : InstBlock()
     {
     }
 
     virtual void gen();
 
-    static void make( Oper o )
+    static void make( )
     {
-        ReturnInst local( o );
+        ReturnInst local;
         local.gen();
     }
 
@@ -444,6 +444,24 @@ struct DivInst
     static void make( Oper s, Oper d )
     {
         DivInst local( s, d );
+        local.gen();
+    }
+
+    virtual void gen();
+};
+
+struct ModInst 
+    : BinaryInst 
+{
+
+    ModInst(Oper s, Oper d) 
+        : BinaryInst(s, d)
+    {
+    }
+
+    static void make( Oper s, Oper d )
+    {
+        ModInst local( s, d );
         local.gen();
     }
 
@@ -652,19 +670,19 @@ struct LeaveInst
     virtual void gen();
 };
 
-struct ConstantWordInst 
+struct ConstWordInst 
     : InstBlock 
 {
     Oper value;
 
-    ConstantWordInst(Oper o) 
+    ConstWordInst(Oper o) 
         : value(o)
     {
     }
 
     static void make( Oper o )
     {
-        ConstantWordInst local( o );
+        ConstWordInst local( o );
         local.gen();
     }   
 
@@ -851,19 +869,4 @@ extern Oper TOS; // The top of stack (treated as a register)
 
 Oper regOper(int i); // register oper for reg number i
 
-inline void gen_move_immediate(Oper dest, int value)
-{
-    MoveInst :: make(dest, ImmediateOper :: make(ConstantOper :: make(value)));
-}
-inline void gen_jump(Oper label)
-{
-    LabelInst :: make(label);
-}
-inline void gen_compare(Oper label)
-{
-    LabelInst :: make(label);
-}
-inline void gen_set_cc(int t, Oper l, Oper r, Oper d)
-{
-    CompareAndSetInst :: make(t, l, r, d);
-}
+Oper constOper(int v);

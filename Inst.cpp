@@ -14,12 +14,19 @@ static Oper regOpers[] = {
     new RegisterOper(4),
     new RegisterOper(5),
     new RegisterOper(6),
-    new RegisterOper(7)
+    new RegisterOper(7),
+    new RegisterOper(8),
+    0
 };
 
 Oper regOper(int i)
 {
     return regOpers[i];
+}
+
+Oper constOper(int v)
+{
+    return ImmediateOper :: make (ConstOper :: make(v));
 }
 
 int TempLabelOper  ::  TEMP_NUMBER = 10;
@@ -78,6 +85,11 @@ void MultInst :: gen()
 void DivInst :: gen()
 {
    cout << "\t" << dest << " /= " << src << ";\n";
+}
+
+void ModInst :: gen()
+{
+   cout << "\t" << dest << " %= " << src << ";\n";
 }
 
     void do_move(Oper src, Oper dest)
@@ -161,7 +173,7 @@ void CompareAndSetInst :: gen()
 {
     int op = cond;
     cout << "\t";
-    cout << "(" << dest << ") = " << "( " << left << " ";
+    cout << "(" << dest << ")=" << "(" << left << "";
     switch (op) {
             case '<':
                     cout << "<";
@@ -185,7 +197,7 @@ void CompareAndSetInst :: gen()
                     compiler_error("CompareAndSetInst.default");
                     break;
     }
-    cout << " " << right << " ) ? true : false;\n";
+    cout << "" << right << ")?1:0;\n";
 }
 
 void CallInst :: gen() 
@@ -281,7 +293,7 @@ void LeaveInst :: gen()
     }
 }
 
-void ConstantWordInst :: gen()
+void ConstWordInst :: gen()
 {
    cout << "\t" << value << ",\n";
 }
@@ -295,7 +307,7 @@ void ImmediateOper :: gen()
     immediate->gen();
 }
 
-void ConstantOper :: gen()
+void ConstOper :: gen()
 {
     cout << constValue;
 }
@@ -324,7 +336,7 @@ void RegisterOper :: gen()
                     cout << "FP";
                     return;
             case 8:
-                    cout << "TOS_ERROR"; //TOS
+                    cout << "TOS";
                     return;
             default:
                     compiler_error("unknown register number in gen");
@@ -334,7 +346,7 @@ void RegisterOper :: gen()
 
 void IndexedOper :: gen()
 {
-    cout << "((WPointer)";
+    cout << "((WPtr)";
     array->gen();
     cout << ")";
     cout << "[";
@@ -345,16 +357,16 @@ void IndexedOper :: gen()
 
 void IndirectedOper :: gen()
 {
-    cout << "*(WPointer)";
+    cout << "*(WPtr)(";
     indirected->gen();
-    cout << ""; 
+    cout << ")"; 
 }
 
 void SelectedOper :: gen()
 {
-    cout << "((WPointer)"; 
+    cout << "("; 
     selected->gen();
-    cout << " + " << selectedOffset << ")";
+    cout << "+" << selectedOffset << ")";
 }
 
 void NamedLabelOper :: gen()
@@ -368,4 +380,4 @@ void TempLabelOper :: gen()
     cout << "_T" << labelNumber;
 }
 
-Oper TOS = new RegisterOper(TOS_REG);
+Oper TOS = regOper(TOS_REG);
