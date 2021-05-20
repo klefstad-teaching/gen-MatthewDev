@@ -50,22 +50,22 @@ void UnaryInst :: gen()
 
 void NegateInst :: gen()
 {
-    cout << "\t" << operand << " = - (Word)" << operand << ";\n"; 
+    cout << "    " << operand << " = - (Word)" << operand << ";\n"; 
 }
 
 void DecrInst :: gen()
 {
-    cout << "\t(" << operand << ") --;\n";
+    cout << "    (" << operand << ") --;\n";
 }
 
 void IncrInst :: gen()
 {
-    cout << "\t(" << operand << ") ++;\n";
+    cout << "    (" << operand << ") ++;\n";
 }
 
 void ReturnInst :: gen()
 {
-    cout << "\treturn 0;\n";
+    cout << "    return 0;\n";
 }
 
 
@@ -76,89 +76,89 @@ void BinaryInst :: gen()
 
 void PlusInst :: gen()
 {
-   cout << "\t" << dest << " += " << src << ";\n";
+   cout << "    " << dest << " += " << src << ";\n";
 }
 
 void MinusInst :: gen()
 {
-   cout << "\t" << dest << " -= " << src << ";\n";
+   cout << "    " << dest << " -= " << src << ";\n";
 }
 
 void MultInst :: gen()
 {
-   cout << "\t" << dest << " *= " << src << ";\n";
+   cout << "    " << dest << " *= " << src << ";\n";
 }
 
 void DivInst :: gen()
 {
-   cout << "\t" << dest << " /= " << src << ";\n";
+   cout << "    " << dest << " /= " << src << ";\n";
 }
 
 void ModInst :: gen()
 {
-   cout << "\t" << dest << " %= " << src << ";\n";
+   cout << "    " << dest << " %= " << src << ";\n";
 }
 
     void do_move(Oper dest, Oper src)
     {
-        cout << "\t" << dest << " = " << src << ";\n";
+        cout << "    " << dest << " = " << src << ";\n";
     }
 
     void do_push(Oper src)
     {
-        cout << "\tpushw(" << src << ");\n";
+        cout << "    pushw(" << src << ");\n";
     }
 
     void do_pop(Oper dest)
     {
-        cout << "\tpopw(" << dest << ");\n";
+        cout << "    popw(" << dest << ");\n";
     }
 
     void do_pushp(Oper src)
     {
-        cout << "\tpushp(" << src << ");\n";
+        cout << "    pushp(" << src << ");\n";
     }
 
     void do_popp(Oper dest)
     {
-        cout << "\tpopp(" << dest << ");\n";
+        cout << "    popp(" << dest << ");\n";
     }
 
 
 void MoveInst :: gen()
 {
    if (dest == TOS)
-      do_pushw(src);
+      do_push(src);
    else if (src == TOS)
-      do_popw(dest);
+      do_pop(dest);
    else
       do_move(dest, src);
 }
 
 void AddressInst :: gen()
 {
-    cout << "\t" << dest << " =  & " << src << ";\n";
+    cout << "    " << dest << " =  & " << src << ";\n";
 }
 
 void JumpInst :: gen()
 {
-    cout << "\tgoto " << to << ";\n";
+    cout << "    goto " << to << ";\n";
 }
 
 void JumpZeroInst :: gen()
 {
-    cout << "\tif ( !" << oper << " ) goto " << label << ";\n";
+    cout << "    if ( !" << oper << " ) goto " << label << ";\n";
 }
 
 void JumpNotZeroInst :: gen()
 {
-    cout << "\tif ( " << oper << " ) goto " << label << ";\n";
+    cout << "    if ( " << oper << " ) goto " << label << ";\n";
 }
 
 void CompareAndJumpInst :: gen()
 {
     int op = cond;
-    cout << "\t";
+    cout << "    ";
     cout << "if ( " << left << " ";
     switch (op) {
             case '<':
@@ -189,7 +189,7 @@ void CompareAndJumpInst :: gen()
 void CompareAndSetInst :: gen()
 {
     int op = cond;
-    cout << "\t";
+    cout << "    ";
     cout << "(" << dest << ")=" << "(" << left << "";
     switch (op) {
             case '<':
@@ -219,7 +219,7 @@ void CompareAndSetInst :: gen()
 
 void CallInst :: gen() 
 {
-   cout << "\t" << subprogramName << "();\n";
+   cout << "    " << subprogramName << "();\n";
 }
 
 void BeginFileInst :: gen()
@@ -248,14 +248,14 @@ void BeginVTableInst :: gen()
 
 void VTableEntryInst :: gen()
 {
-    cout << "\t" << name << ",\n";
+    cout << "    " << name << ",\n";
 }
 
 // End a vtable declaration
  
 void EndVTableInst :: gen()
 {
-    cout <<"\t0};\n\n"; 
+    cout <<"    0};\n\n"; 
 }
 
 
@@ -268,7 +268,7 @@ void BeginDataInst :: gen()
 
 void EndDataInst :: gen()
 {
-    cout << "\t0};" << endl;
+    cout << "    0};" << endl;
 }
 
 void EnterInst :: gen()
@@ -279,12 +279,12 @@ void EnterInst :: gen()
     if (localSize > 0)
     {
         Oper d = regOper(SP_REG);
-        cout << "\t";
+        cout << "    ";
         d->gen(); 
         cout << " -= " << localSize << ";\n";
     }
     for (i = 0; i < registersUsed ; i++)
-        do_pushw(regOper(MIN_GP_REG+i));
+        do_push(regOper(MIN_GP_REG+i));
 }
 
 void LeaveInst :: gen()
@@ -292,11 +292,11 @@ void LeaveInst :: gen()
     int i;
 
     for (i = registersUsed-1; i >= 0; i--)
-        do_popw(regOper(MIN_GP_REG+i));
+        do_pop(regOper(MIN_GP_REG+i));
     if (localSize > 0)
     {
         Oper d=regOper(SP_REG);
-        cout << "\t";
+        cout << "    ";
         d->gen(); 
         cout << " += " << localSize << ";\n";
     }
@@ -304,7 +304,7 @@ void LeaveInst :: gen()
     if (paramSize > 0)
     {
         Oper d=regOper(SP_REG);
-        cout << "\t";
+        cout << "    ";
         d->gen(); 
         cout << " += " << paramSize << ";\n";
     }
@@ -312,7 +312,7 @@ void LeaveInst :: gen()
 
 void ConstWordInst :: gen()
 {
-   cout << "\t" << value << ",\n";
+   cout << "    " << value << ",\n";
 }
 
 
