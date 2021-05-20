@@ -87,6 +87,12 @@ struct RegisterOper
 	}
     virtual void gen();
 
+	virtual int findGPRegister()
+    {
+        return regNum;
+    }
+
+
 };
 
 struct IndirectedOper 
@@ -106,6 +112,11 @@ struct IndirectedOper
 
 
     virtual void gen();
+
+	virtual int findGPRegister()
+    {
+        return indirected->findGPRegister();
+    }
 
 };
 
@@ -127,6 +138,11 @@ struct SelectedOper
 
 
     virtual void gen();
+    
+	virtual int findGPRegister()
+    {
+        return selected->findGPRegister();
+    }
 
 };
 
@@ -150,6 +166,20 @@ struct IndexedOper
 
 
     virtual void gen();
+
+	virtual int findGPRegister()
+    {
+        int reg1 = array->findGPRegister();
+        int reg2 = index->findGPRegister();
+        if (reg1 > 0)
+        {
+            if (reg2 > 0)
+                compiler_error("IndexedOper::findGPRegister() two registers to free");
+            else
+                return reg1;
+        }
+        return reg2;
+    }
 
 };
 
@@ -359,10 +389,10 @@ struct ReturnInst
 struct BinaryInst
     : InstBlock 
 {
-    Oper src, dest;
+    Oper dest, src;
 
-    BinaryInst( Oper s, Oper d) 
-        : src(s), dest(d)
+    BinaryInst( Oper d, Oper s) 
+        : dest(d), src(s)
     {
     }
 
@@ -375,14 +405,14 @@ struct PlusInst
     : BinaryInst 
 {
 
-    PlusInst(Oper s, Oper d) 
-        : BinaryInst(s, d)
+    PlusInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        PlusInst local( s, d );
+        PlusInst local( d, s );
         local.gen();
     }
 
@@ -396,14 +426,14 @@ struct MinusInst
     : BinaryInst 
 {
 
-    MinusInst(Oper s, Oper d)
-        : BinaryInst(s, d)
+    MinusInst(Oper d, Oper s)
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        MinusInst local( s, d );
+        MinusInst local( d, s );
         local.gen();
     }
 
@@ -416,14 +446,14 @@ struct MultInst
     : BinaryInst 
 {
 
-    MultInst(Oper s, Oper d) 
-        : BinaryInst(s, d)
+    MultInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        MultInst local( s, d );
+        MultInst local( d, s );
         local.gen();
     }
 
@@ -436,14 +466,14 @@ struct DivInst
     : BinaryInst 
 {
 
-    DivInst(Oper s, Oper d) 
-        : BinaryInst(s, d)
+    DivInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        DivInst local( s, d );
+        DivInst local( d, s );
         local.gen();
     }
 
@@ -454,14 +484,14 @@ struct ModInst
     : BinaryInst 
 {
 
-    ModInst(Oper s, Oper d) 
-        : BinaryInst(s, d)
+    ModInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        ModInst local( s, d );
+        ModInst local( d, s );
         local.gen();
     }
 
@@ -474,14 +504,14 @@ struct MoveInst
     : BinaryInst 
 {
 
-    MoveInst(Oper s, Oper d) 
-        : BinaryInst(s,d)
+    MoveInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        MoveInst local( s, d );
+        MoveInst local( d, s );
         local.gen();
     }
 
@@ -494,14 +524,14 @@ struct AddressInst
     : BinaryInst 
 {
 
-    AddressInst(Oper s, Oper d) 
-        : BinaryInst(s,d)
+    AddressInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
     {
     }
 
-    static void make( Oper s, Oper d )
+    static void make( Oper d, Oper s )
     {
-        AddressInst local( s, d );
+        AddressInst local( d, s );
         local.gen();
     }
 
@@ -601,9 +631,9 @@ struct CompareAndSetInst
     {
     }
 
-    static void make( int t, Oper l, Oper r, Oper dest )
+    static void make( int t, Oper l, Oper r, Oper d )
     {
-        CompareAndSetInst local( t, l, r, dest );
+        CompareAndSetInst local( t, l, r, d );
         local.gen();
     }    
         
@@ -656,14 +686,14 @@ struct LeaveInst
    int registersUsed;
    int paramSize; 
 
-    LeaveInst(int ls,int ru, int ps) 
+    LeaveInst(int ls, int ru, int ps) 
         : localSize(ls),registersUsed(ru),paramSize(ps)
     {
     }
 
-    static void make( int ls, int ru, int ps )
+    static void make(int ls, int ru, int ps)
     {
-        LeaveInst local( ls, ru, ps );
+        LeaveInst local(ls, ru, ps);
         local.gen();
     }   
 

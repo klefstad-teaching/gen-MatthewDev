@@ -28,10 +28,16 @@ ControlStack STK;
 // stack pointer and frame pointer
 WPtr STKEnd = STK+STK_SIZE-1;
 WPtr SP = STKEnd;
-Word FP = (Word)STKEnd;
+WPtr FP = STKEnd;
 
-#define push(W) *--SP = (W)
-#define pop(W) (W) = *SP++
+// arg is a quad word
+#define pushw(W) (*--SP) = (W)
+#define popw(W) (W) = (*SP++)
+
+// arg is a quad word pointer
+#define pushp(W) (*--SP) = reinterpret_cast<Word>(W)
+#define popp(W) (W) = reinterpret_cast<WPtr>(*SP++)
+
 /*
 
 typedef int (*Vfn)();      // A virtual function pointer.
@@ -39,7 +45,7 @@ typedef int (*Vfn)();      // A virtual function pointer.
 void put_char()
 {
     push(FP);
-    FP = (Word)SP; 
+    FP = SP; 
     printf("%c", SP[1]);
     fflush(stdout); 
     pop(FP); 

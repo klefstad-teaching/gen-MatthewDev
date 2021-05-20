@@ -16,6 +16,13 @@ static Oper regOpers[] = {
     new RegisterOper(6),
     new RegisterOper(7),
     new RegisterOper(8),
+    new RegisterOper(9),
+    new RegisterOper(10),
+    new RegisterOper(11),
+    new RegisterOper(12),
+    new RegisterOper(13),
+    new RegisterOper(14),
+    new RegisterOper(15),
     0
 };
 
@@ -92,35 +99,45 @@ void ModInst :: gen()
    cout << "\t" << dest << " %= " << src << ";\n";
 }
 
-    void do_move(Oper src, Oper dest)
+    void do_move(Oper dest, Oper src)
     {
-        cout << "\t" << dest << " = (Word)" << src << ";\n";
+        cout << "\t" << dest << " = " << src << ";\n";
     }
 
     void do_push(Oper src)
     {
-        cout << "\tpush(" << src << ");\n";
+        cout << "\tpushw(" << src << ");\n";
     }
 
     void do_pop(Oper dest)
     {
-        cout << "\tpop(" << dest << ");\n";
+        cout << "\tpopw(" << dest << ");\n";
+    }
+
+    void do_pushp(Oper src)
+    {
+        cout << "\tpushp(" << src << ");\n";
+    }
+
+    void do_popp(Oper dest)
+    {
+        cout << "\tpopp(" << dest << ");\n";
     }
 
 
 void MoveInst :: gen()
 {
    if (dest == TOS)
-      do_push(src);
+      do_pushw(src);
    else if (src == TOS)
-      do_pop(dest);
+      do_popw(dest);
    else
-      do_move(src, dest);
+      do_move(dest, src);
 }
 
 void AddressInst :: gen()
 {
-    cout << "\t" << dest << " = (Word) & " << src << ";\n";
+    cout << "\t" << dest << " =  & " << src << ";\n";
 }
 
 void JumpInst :: gen()
@@ -197,7 +214,7 @@ void CompareAndSetInst :: gen()
                     compiler_error("CompareAndSetInst.default");
                     break;
     }
-    cout << "" << right << ")?1:0;\n";
+    cout << "" << right << ");\n";
 }
 
 void CallInst :: gen() 
@@ -257,8 +274,8 @@ void EndDataInst :: gen()
 void EnterInst :: gen()
 {
     int i;
-    do_push(regOper(FP_REG));
-    do_move(regOper(SP_REG), regOper(FP_REG));
+    do_pushp(regOper(FP_REG));
+    do_move(regOper(FP_REG), regOper(SP_REG));
     if (localSize > 0)
     {
         Oper d = regOper(SP_REG);
@@ -267,24 +284,24 @@ void EnterInst :: gen()
         cout << " -= " << localSize << ";\n";
     }
     for (i = 0; i < registersUsed ; i++)
-        do_push(regOper(MIN_GP_REG+i));
+        do_pushw(regOper(MIN_GP_REG+i));
 }
 
 void LeaveInst :: gen()
 {
     int i;
 
-    for (i = registersUsed-1; i>=0; i--)
-        do_pop(regOper(MIN_GP_REG+i));
-    if(localSize>0)
+    for (i = registersUsed-1; i >= 0; i--)
+        do_popw(regOper(MIN_GP_REG+i));
+    if (localSize > 0)
     {
         Oper d=regOper(SP_REG);
         cout << "\t";
         d->gen(); 
         cout << " += " << localSize << ";\n";
     }
-    do_pop(regOper(FP_REG));
-    if(paramSize>0)
+    do_popp(regOper(FP_REG));
+    if (paramSize > 0)
     {
         Oper d=regOper(SP_REG);
         cout << "\t";
@@ -335,8 +352,35 @@ void RegisterOper :: gen()
             case FP_REG:
                     cout << "FP";
                     return;
+            case 6:
+                    cout << "R6";
+                    return;
+            case 7:
+                    cout << "R7";
+                    return;
             case 8:
                     cout << "TOS";
+                    return;
+            case 9:
+                    cout << "R9";
+                    return;
+            case 10:
+                    cout << "R10";
+                    return;
+            case 11:
+                    cout << "R11";
+                    return;
+            case 12:
+                    cout << "R12";
+                    return;
+            case 13:
+                    cout << "R13";
+                    return;
+            case 14:
+                    cout << "R14";
+                    return;
+            case 15:
+                    cout << "R15";
                     return;
             default:
                     compiler_error("unknown register number in gen");
@@ -357,9 +401,9 @@ void IndexedOper :: gen()
 
 void IndirectedOper :: gen()
 {
-    cout << "*(WPtr)(";
+    cout << "*((WPtr)(";
     indirected->gen();
-    cout << ")"; 
+    cout << "))"; 
 }
 
 void SelectedOper :: gen()
