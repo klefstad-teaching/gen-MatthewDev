@@ -28,6 +28,11 @@ struct OperBlock
         compiler_error("undefined method gen in OperBlock");
     }
 
+    virtual bool equals(Oper o)
+    {
+        return this == o;
+    }
+
 };
 
 inline ostream & operator << (ostream & out, Oper o)

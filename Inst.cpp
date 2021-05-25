@@ -266,6 +266,11 @@ void BeginDataInst :: gen()
     cout << "Word " << name << "[]={" << endl;
 }
 
+void ConstWordInst :: gen()
+{
+   cout << "    (Word)" << value << ",\n";
+}
+
 void EndDataInst :: gen()
 {
     cout << "    0};" << endl;
@@ -308,11 +313,6 @@ void LeaveInst :: gen()
         d->gen(); 
         cout << " += " << paramSize << ";\n";
     }
-}
-
-void ConstWordInst :: gen()
-{
-   cout << "    " << value << ",\n";
 }
 
 
