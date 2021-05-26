@@ -31,110 +31,14 @@ WPtr SP = STKEnd;
 WPtr FP = STKEnd;
 
 // arg is a quad word
-#define pushw(W) (*--SP) = (W)
-#define popw(W) (W) = (*SP++)
+#define pushw(W) (*--SP) = (Word)(W)
+#define popw(W) (W) = (Word)(*SP++)
 
 // arg is a quad word pointer
 #define pushp(W) (*--SP) = reinterpret_cast<Word>(W)
 #define popp(W) (W) = reinterpret_cast<WPtr>(*SP++)
 
 /*
-
-typedef int (*Vfn)();      // A virtual function pointer.
-
-void put_char()
-{
-    push(FP);
-    FP = SP; 
-    printf("%c", SP[1]);
-    fflush(stdout); 
-    pop(FP); 
-    SP += 1;
-}
-
-void new_line()
-{
-    printf("\n");
-    fflush(stdout); 
-}
-
-void put_str()
-{
-    WPtr p;
-    push(FP);
-    FP = (Word)SP; 
-    for(p = (WPtr)(SP[1]); *p != 0; p++)
-    {
-        printf("%c", *p);
-        fflush(stdout); 
-    }
-    pop(FP); 
-    SP += 1;
-}
-
-void put_int()
-{
-    push(FP);
-    FP = (Word)SP; 
-    printf("%d",(Word)SP[1]);
-    fflush(stdout); 
-    pop(FP); 
-    SP += 1;
-}
-
-void get_int()
-{
-    push(FP);
-    FP = (Word)SP; 
-    scanf("%d",&R0); 
-    pop(FP); 
-}
-
-void get_char()
-{
-    char c; 
-    push(FP);
-    FP = (Word)SP; 
-    scanf("%c",&c);
-    R0 = (Word)c; 
-    pop(FP); 
-}
-
-void get_str()
-{
-    WPtr p, q;
-    push(FP);
-    FP = (Word)SP; 
-    char s[512]; 
-    char* ps = s;
-    gets(s);
-    p = q = (WPtr)malloc(sizeof(Word)*(strlen(s)+1));
-    for(; *s != '\0'; ps++, p++)
-        *p = (Word)*ps; 
-    R0 = (Word)q; 
-    pop(FP); 
-}
-
-void mallocate()
-{
-    push(FP);
-    FP = (Word)SP; 
-    R0 = (Word)malloc(SP[1]); 
-    pop(FP); 
-    SP += 1;
-}
-
-void mfree()
-{
-    push(FP);
-    FP = (Word)SP; 
-    free((char *)SP[1]); 
-    pop(FP); 
-    SP += 1;
-}
-
-// for debugging - place calls in target code
-
 void dumpStack()
 {
     for (WPtr p = SP; p < STK+STK_SIZE; p++)
@@ -152,3 +56,4 @@ void dumpRegs()
 }
 */
 
+#include "lib.c"
