@@ -327,6 +327,24 @@ struct NegateInst
 
 };
 
+struct NotInst
+    : UnaryInst
+{
+    NotInst(Oper o)
+        : UnaryInst(o)
+    {
+    }
+
+    virtual void gen();
+
+    static void make( Oper o )
+    {
+        NotInst local( o );
+        local.gen();
+    }
+
+};
+
 // The decrement unary operator decrements its operand by one
 
 struct DecrInst
@@ -517,6 +535,24 @@ struct MoveInst
     static void make( Oper d, Oper s )
     {
         MoveInst local( d, s );
+        local.gen();
+    }
+
+    virtual void gen();
+};
+
+struct MoveNotInst 
+    : BinaryInst 
+{
+
+    MoveNotInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
+    {
+    }
+
+    static void make( Oper d, Oper s )
+    {
+        MoveNotInst local( d, s );
         local.gen();
     }
 

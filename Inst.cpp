@@ -63,6 +63,11 @@ void IncrInst :: gen()
     cout << "    (" << operand << ") ++;\n";
 }
 
+void NotInst :: gen()
+{
+    cout << "    (" << operand << ") = !(" << operand << ");\n";
+}
+
 void ReturnInst :: gen()
 {
     cout << "    return 0;\n";
@@ -72,6 +77,11 @@ void ReturnInst :: gen()
 void BinaryInst :: gen()
 {
     compiler_error("unknown binary operator");
+}
+
+void MoveNotInst :: gen()
+{
+   cout << "    " << dest << " = !(" << src << ");\n";
 }
 
 void PlusInst :: gen()
@@ -321,7 +331,9 @@ void LeaveInst :: gen()
 
 void ImmediateOper :: gen()
 {
+    cout << "(Word)(";
     immediate->gen();
+    cout << ")";
 }
 
 void ConstOper :: gen()
@@ -408,9 +420,9 @@ void IndirectedOper :: gen()
 
 void SelectedOper :: gen()
 {
-    cout << "("; 
+    cout << "((WPtr)("; 
     selected->gen();
-    cout << "+" << selectedOffset << ")";
+    cout << ")+" << selectedOffset << ")";
 }
 
 void NamedLabelOper :: gen()
