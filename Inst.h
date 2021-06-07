@@ -28,6 +28,14 @@ struct OperBlock
         compiler_error("undefined method gen in OperBlock");
     }
 
+<<<<<<< HEAD
+=======
+    virtual bool equals(Oper o)
+    {
+        return this == o;
+    }
+
+>>>>>>> template/main
 };
 
 inline ostream & operator << (ostream & out, Oper o)
@@ -322,6 +330,27 @@ struct NegateInst
 
 };
 
+<<<<<<< HEAD
+=======
+struct NotInst
+    : UnaryInst
+{
+    NotInst(Oper o)
+        : UnaryInst(o)
+    {
+    }
+
+    virtual void gen();
+
+    static void make( Oper o )
+    {
+        NotInst local( o );
+        local.gen();
+    }
+
+};
+
+>>>>>>> template/main
 // The decrement unary operator decrements its operand by one
 
 struct DecrInst
@@ -364,7 +393,11 @@ struct IncrInst
 
 // The return unary operator returns its operand
 
+<<<<<<< HEAD
 struct ReturnInst // would be ret? in x86
+=======
+struct ReturnInst
+>>>>>>> template/main
     : InstBlock
 {
     ReturnInst()
@@ -518,6 +551,27 @@ struct MoveInst
     virtual void gen();
 };
 
+<<<<<<< HEAD
+=======
+struct MoveNotInst 
+    : BinaryInst 
+{
+
+    MoveNotInst(Oper d, Oper s) 
+        : BinaryInst(d, s)
+    {
+    }
+
+    static void make( Oper d, Oper s )
+    {
+        MoveNotInst local( d, s );
+        local.gen();
+    }
+
+    virtual void gen();
+};
+
+>>>>>>> template/main
 // Take the address of the right hand side
 
 struct AddressInst
@@ -679,7 +733,11 @@ struct EnterInst
     virtual void gen();
 };
 
+<<<<<<< HEAD
 struct LeaveInst // restores stack and that's basically it
+=======
+struct LeaveInst 
+>>>>>>> template/main
     : InstBlock 
 {
    int localSize;
@@ -757,7 +815,11 @@ struct BeginSubpInst
     virtual void gen();
 };
 
+<<<<<<< HEAD
 struct EndSubpInst // end function. is just } in C idk if this is anything x86. 
+=======
+struct EndSubpInst 
+>>>>>>> template/main
     : InstBlock 
 {
 
@@ -900,6 +962,7 @@ extern Oper TOS; // The top of stack (treated as a register)
 Oper regOper(int i); // register oper for reg number i
 
 Oper constOper(int v);
+<<<<<<< HEAD
 
 inline void do_move(Oper dest, Oper src)
 {
@@ -926,3 +989,5 @@ inline void do_popp(Oper dest)
     cout << "    popp(" << dest << ");\n";
 }
 
+=======
+>>>>>>> template/main
