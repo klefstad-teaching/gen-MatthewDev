@@ -99,31 +99,6 @@ void ModInst :: gen()
    cout << "    " << dest << " %= " << src << ";\n";
 }
 
-    void do_move(Oper dest, Oper src)
-    {
-        cout << "    " << dest << " = " << src << ";\n";
-    }
-
-    void do_push(Oper src)
-    {
-        cout << "    pushw(" << src << ");\n";
-    }
-
-    void do_pop(Oper dest)
-    {
-        cout << "    popw(" << dest << ");\n";
-    }
-
-    void do_pushp(Oper src)
-    {
-        cout << "    pushp(" << src << ");\n";
-    }
-
-    void do_popp(Oper dest)
-    {
-        cout << "    popp(" << dest << ");\n";
-    }
-
 
 void MoveInst :: gen()
 {
@@ -283,7 +258,7 @@ void EnterInst :: gen()
         d->gen(); 
         cout << " -= " << localSize << ";\n";
     }
-    for (i = 0; i < registersUsed ; i++)
+    for (i = 0; i < registersUsed ; i++) 
         do_push(regOper(MIN_GP_REG+i));
 }
 
@@ -291,7 +266,7 @@ void LeaveInst :: gen()
 {
     int i;
 
-    for (i = registersUsed-1; i >= 0; i--)
+    for (i = registersUsed-1; i >= 0; i--) // TODO: this potentially overrides the stack pointer, which may be... undesirable 
         do_pop(regOper(MIN_GP_REG+i));
     if (localSize > 0)
     {

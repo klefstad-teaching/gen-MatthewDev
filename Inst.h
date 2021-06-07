@@ -364,7 +364,7 @@ struct IncrInst
 
 // The return unary operator returns its operand
 
-struct ReturnInst
+struct ReturnInst // would be ret? in x86
     : InstBlock
 {
     ReturnInst()
@@ -679,7 +679,7 @@ struct EnterInst
     virtual void gen();
 };
 
-struct LeaveInst 
+struct LeaveInst // restores stack and that's basically it
     : InstBlock 
 {
    int localSize;
@@ -757,7 +757,7 @@ struct BeginSubpInst
     virtual void gen();
 };
 
-struct EndSubpInst 
+struct EndSubpInst // end function. is just } in C idk if this is anything x86. 
     : InstBlock 
 {
 
@@ -900,3 +900,29 @@ extern Oper TOS; // The top of stack (treated as a register)
 Oper regOper(int i); // register oper for reg number i
 
 Oper constOper(int v);
+
+inline void do_move(Oper dest, Oper src)
+{
+    cout << "    " << dest << " = " << src << ";\n";
+}
+
+inline void do_push(Oper src)
+{
+    cout << "    pushw(" << src << ");\n";
+}
+
+inline void do_pop(Oper dest)
+{
+    cout << "    popw(" << dest << ");\n";
+}
+
+inline void do_pushp(Oper src)
+{
+    cout << "    pushp(" << src << ");\n";
+}
+
+inline void do_popp(Oper dest)
+{
+    cout << "    popp(" << dest << ");\n";
+}
+
